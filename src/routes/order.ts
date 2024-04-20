@@ -4,14 +4,13 @@ import {
 	readOrders, updateOrder, 
 	deleteOrder
 } from "../controllers";
-import { authenticateUser } from "../middlewares";
 
 const router = orderRouter();
 
-router.post("/create", authenticateUser, createOrder);
+router.post("/create", createOrder);
 router.get("/:orderId", readOrder);
 router.get("/", readOrders);
-router.patch("/:orderId", authenticateUser, updateOrder);
-router.delete("/:orderId", authenticateUser, deleteOrder);
+router.patch("/:orderId", updateOrder);
+router.delete("/:orderId", deleteOrder);
 
 export default router;
