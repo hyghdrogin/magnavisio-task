@@ -1,16 +1,12 @@
 import { Request, Response } from "express";
 import models from "../models";
-import { validateOrderCreation, errorResponse,
-	successResponse, logError, validateOrderUpdate } from "../utils";
+import { errorResponse, successResponse, logError } from "../utils";
 
 export const createOrder = async ( req: Request, res: Response) => {
 	try {
 		const { id } = req.user;
-		const { error, value } = validateOrderCreation(req.body);
-		if(error) {
-			return errorResponse(res, 400, error.message);
-		}
-		const { orderName, price } = value;
+		const { orderName, price } = req.body;
+
 		const newOrder = await models.Order.create({
 			userId: id,
 			orderName,
@@ -55,7 +51,7 @@ export const readOrders = async (req: Request, res: Response) => {
 			offset,
 		});
 
-		if (!orders || orders.count === 0) {
+		if (!orders) {
 			return errorResponse(res, 404, "Orders not found");
 		}
 
@@ -75,10 +71,6 @@ export const updateOrder = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.user;
 		const { orderId } = req.params;
-		const { error, value } = validateOrderUpdate(req.body);
-		if(error) {
-			return errorResponse(res, 400, error.message);
-		}
         
 		const order = await models.Order.findOne({
 			where: {
@@ -91,7 +83,7 @@ export const updateOrder = async (req: Request, res: Response) => {
 			return errorResponse(res, 404, "Order not found");
 		}
 
-		await order.update(value);
+		await order.update(req.body);
 
 		return successResponse(res, 200, "Order updated successfully", { order });
 	} catch (error) {
