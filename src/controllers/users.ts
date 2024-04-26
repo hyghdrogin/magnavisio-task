@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response } from "express";
 import {
-	validateUserCredentials, hashPassword,
+	hashPassword,
 	comparePassword, generateToken, errorResponse,
 	successResponse, logError
 } from "../utils";
@@ -9,11 +9,7 @@ import models from "../models";
 
 export const signupUser = async (req: Request, res: Response) => {
 	try {
-		const { error, value } = validateUserCredentials(req.body);
-		if(error) {
-			return errorResponse(res, 400, error.message);
-		}
-		const { email, password } = value;
+		const { email, password } = req.body;
 
 		const emailCheck = await models.User.findOne({
 			where: {
@@ -40,11 +36,7 @@ export const signupUser = async (req: Request, res: Response) => {
 
 export const signinUser = async (req: Request, res: Response) => {
 	try {
-		const { error, value } = validateUserCredentials(req.body);
-		if(error) {
-			return errorResponse(res, 400, error.details[0].message);
-		}
-		const { email, password } = value;
+		const { email, password } = req.body;
 
 		const userData = await models.User.findOne({
 			where: {
